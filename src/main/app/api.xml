@@ -33,12 +33,16 @@ http://www.mulesoft.org/schema/mule/objectstore http://www.mulesoft.org/schema/m
 			doc:name="HTTP" />
 		<apikit:console config-ref="api-config" doc:name="APIkit Console" />
 	</flow>
+
+	<!-- This flow executes a query (id lookup) against an in-memory object store  -->
 	<flow name="get:/claim/{id}:api-config">
 		<objectstore:retrieve config-ref="ObjectStore__Connector"
 			key="#[message.inboundProperties['http.uri.params']['id']]" doc:name="ObjectStore" />
 		<json:object-to-json-transformer
 			doc:name="Object to JSON" />
 	</flow>
+
+	<!-- This flow accepts a command (persist claims) and pushes them to a Kafka topic (our journal)  -->
 	<flow name="post:/claims:api-config">
 		<object-to-string-transformer doc:name="Object to String" />
 		<json:json-to-object-transformer
@@ -58,6 +62,9 @@ http://www.mulesoft.org/schema/mule/objectstore http://www.mulesoft.org/schema/m
 			doc:name="Object to JSON" />
 	</flow>
 
+	<!--  This flow consumes off the Kafka topic and updates the in-memory object store.  
+		  When Mule starts it does this again from the beginning to re-constitute its state.
+	 -->
 	<flow name="apiFlow">
 		<apachekafka:consumer config-ref="Apache_Kafka__Config"
 			topic="claims" partitions="1" doc:name="Apache Kafka (Streaming)" />
@@ -66,6 +73,8 @@ http://www.mulesoft.org/schema/mule/objectstore http://www.mulesoft.org/schema/m
 		<objectstore:store config-ref="ObjectStore__Connector"
 			key="#[payload.id]" value-ref="#[payload]" overwrite="true" doc:name="ObjectStore" />
 	</flow>
+	
+	<!-- Boilerplate -->
 	<apikit:mapping-exception-strategy
 		name="api-apiKitGlobalExceptionMapping">
 		<apikit:mapping statusCode="404">
