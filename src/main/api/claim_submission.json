@@ -1,0 +1,13 @@
+[	
+  {	
+	"date" : "2015-03-20",
+	"nameOfInsured" : "John Smith",
+	"policyNumber" : "AB-1234",
+	"lossDetails" : {
+       "amount" : "1750",
+       "dateOfOccurrence" : "2015-03-18",
+       "description" : "Car crash",
+       "location" : "London, UK"
+    }
+  }
+]

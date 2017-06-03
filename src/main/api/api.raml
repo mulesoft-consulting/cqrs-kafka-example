@@ -1,0 +1,37 @@
+#%RAML 0.8
+title: Claim Management API
+version: 1.0
+#baseUri: http://claim-management.cloudhub.io/api
+#baseUri: http://mocksvc.mulesoft.com/mocks/edb309d5-8fb8-4fc1-bb8b-49ddc0526f49/api
+baseUri: https://mocksvc.mulesoft.com/mocks/edb309d5-8fb8-4fc1-bb8b-49ddc0526f49/api
+
+/claim/{id}:
+  displayName: Claim by ID
+  uriParameters:
+    id:
+      description: |
+        Claim ID
+      type: string
+      required: true
+      minLength: 3
+      maxLength: 50
+      example: f323849c-15f4-4c4b-8148-0455b1353636
+  get:
+    description: Returns status of a claim by ID
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include claim_status.json
+/claims:
+  displayName: Claim Submission
+  post:
+    description: Submit a new claim
+    body:
+      application/json:
+        example:  !include claim_submission.json
+    responses:    
+      200:
+        body:
+          application/json:
+            example: !include claim_submission_result.json
